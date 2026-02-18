@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Will You Marry Me?</title>
+<style>
+html, body {
+  margin:0; padding:0; width:100%; height:100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ffe6f0, #ffd1dc);
+  display:flex; justify-content:flex-start; align-items:center;
+  flex-direction:column;
+  overflow:hidden;
+  color:#333;
+}
+h1 {
+  font-size:3em;
+  color:#ff6b81;
+  text-align:center;
+  margin-top:30px;
+  text-shadow:2px 2px 5px rgba(0,0,0,0.2);
+}
+#message {
+  font-size:1.5em;
+  min-height:100px;
+  max-width:600px;
+  text-align:center;
+  margin:20px;
+  line-height:1.5em;
+}
+
+/* Buttons */
+button {
+  padding:15px 45px;
+  font-size:22px;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  transition: transform 0.2s, background 0.3s;
+  box-shadow:0 4px 15px rgba(0,0,0,0.2);
+  position:absolute;
+  z-index:10;
+}
+#yesBtn { background:#ff6b81; color:white; }
+#yesBtn:hover { transform:scale(1.1); background:#ff476b; }
+#noBtn { background:#555; color:white; }
+#noBtn:hover { transform:scale(1.1); }
+
+/* Floating hearts */
+.heart {
+  position:absolute;
+  width:20px; height:20px;
+  background:#ff6b81;
+  transform:rotate(45deg);
+  animation: floatUp linear forwards;
+  opacity:0.8;
+}
+.heart::before, .heart::after {
+  content:""; position:absolute; width:20px; height:20px;
+  background:#ff6b81; border-radius:50%;
+}
+.heart::before { top:-10px; left:0; }
+.heart::after { left:10px; top:0; }
+@keyframes floatUp {0%{transform:translate(0,0) rotate(45deg);opacity:1;}100%{transform:translate(0,-600px) rotate(45deg);opacity:0;}}
+
+/* Confetti */
+.confetti {
+  position:absolute; width:10px; height:10px; border-radius:50%;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {0%{transform:translateY(0) rotate(0deg);}100%{transform:translateY(800px) rotate(360deg);opacity:0;}}
+</style>
+</head>
+<body>
+
+<h1>Hey Sweetheart… 💖</h1>
+<div id="message"></div>
+
+<button id="yesBtn">Yes</button>
+<button id="noBtn">No</button>
+
+<script>
+window.onload = function() {
+const message = document.getElementById("message");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+
+// Typing initial messages with emojis
+const messages = [
+  "You make my heart skip a beat... 💓",
+  "Every moment with you is magic ✨",
+  "I can't imagine life without you 😘",
+  "So, will you marry me? 💍"
+];
+let msgIndex=0, charIndex=0;
+function typeMessage(){
+  if(msgIndex<messages.length){
+    if(charIndex<messages[msgIndex].length){
+      message.innerHTML += messages[msgIndex][charIndex++];
+      setTimeout(typeMessage,80);
+    } else {
+      message.innerHTML += "<br>";
+      charIndex=0; msgIndex++;
+      setTimeout(typeMessage,400);
+    }
+  }
+}
+typeMessage();
+
+// No messages sequence with emojis
+const noMessages = ["Are you sure? 😳", "Really? 🥺", "Think again! 💕", "Please say Yes! 😘"];
+let noMsgIndex=0;
+
+// Move No button anywhere on the page
+function moveNoButton(){
+  const padding = 20;
+  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+// No button hover → show message immediately & move
+noBtn.addEventListener("mouseenter", ()=>{
+  message.innerHTML += "<br>" + noMessages[noMsgIndex++];
+  noMsgIndex %= noMessages.length;
+  moveNoButton();
+});
+
+// Click also triggers message & move
+noBtn.addEventListener("click", ()=>{
+  message.innerHTML += "<br>" + noMessages[noMsgIndex++];
+  noMsgIndex %= noMessages.length;
+  moveNoButton();
+});
+
+// Floating hearts
+function createHeart(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.style.left=Math.random()*window.innerWidth+"px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),4000);
+}
+setInterval(createHeart,300);
+
+// Confetti + design on Yes
+function createConfetti(){
+  for(let i=0;i<150;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*window.innerWidth+"px";
+    c.style.background = ["#f1c40f","#e67e22","#ff6b81","#e84393","#3498db","#8e44ad","#1abc9c"][Math.floor(Math.random()*7)];
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+
+// Yes button click → cute page with messages
+yesBtn.addEventListener("click", ()=>{
+  document.body.style.background = "linear-gradient(135deg, #ffe6f0, #ffb6c1)";
+  createConfetti();
+  for(let i=0;i<50;i++) createHeart();
+
+  // Clear old content
+  document.body.innerHTML = `
+    <h1 id="finalTitle" style="color:#ff476b;text-shadow:2px 2px 10px rgba(0,0,0,0.3); margin-top:50px; text-align:center;">🥰 She said YES! 💖</h1>
+    <div id="finalMessages" style="font-size:1.8em; color:#ff6b81; text-align:center; margin-top:30px; line-height:1.8em;"></div>
+  `;
+
+  const finalMessages = [
+    "I promise to make every day magical ✨",
+    "You are my everything 😘",
+    "Forever starts today… 💍",
+    "Every moment with you is a blessing 💕",
+    "I can't wait for all our adventures together 🌸",
+    "Thank you for making me the happiest person alive ❤️"
+  ];
+  const finalMsgContainer = document.getElementById("finalMessages");
+  let msgIdx = 0;
+
+  function showFinalMessage(){
+    if(msgIdx < finalMessages.length){
+      finalMsgContainer.innerHTML += finalMessages[msgIdx] + "<br>";
+      msgIdx++;
+      setTimeout(showFinalMessage, 1500); // show each message one by one
+    }
+  }
+  showFinalMessage();
+
+  // Optional: subtle animated background gradient
+  let hue = 330;
+  setInterval(()=>{
+    hue += 0.2;
+    document.body.style.background = `linear-gradient(135deg, hsl(${hue}, 100%, 90%), hsl(${hue+30}, 100%, 80%))`;
+  }, 100);
+});
+
+// Initialize buttons side by side in the center
+function initButtons(){
+  const centerX = window.innerWidth/2;
+  const centerY = window.innerHeight/2;
+  yesBtn.style.left = (centerX - yesBtn.offsetWidth - 10) + "px";
+  yesBtn.style.top = centerY + "px";
+  noBtn.style.left = (centerX + 10) + "px";
+  noBtn.style.top = centerY + "px";
+}
+initButtons();
+window.addEventListener("resize", initButtons);
+
+}
+</script>
+</body>
+</html>
